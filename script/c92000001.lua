@@ -1,5 +1,15 @@
 -- Codex Authority – Statutory Framework
-dofile("script/codex/amendment.lua")
+if not Codex or not Codex.EVENT_AMEND_CHANGE then
+	local ok =
+		pcall(dofile, "expansions/script/codex/amendment.lua") or
+		pcall(dofile, "script/codex/amendment.lua") or
+		pcall(dofile, "expansions/AiGiOh/script/codex/amendment.lua") or
+		pcall(dofile, "AiGiOh/script/codex/amendment.lua")
+	if not ok then
+		-- Hard fail with a useful message in logs
+		error("Codex helper not found. Expected codex/amendment.lua under expansions/script or script/.")
+	end
+end
 
 local s, id = GetID()
 
