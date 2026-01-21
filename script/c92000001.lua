@@ -35,6 +35,7 @@ function s.initial_effect(c)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetOperation(s.endphase_op)
+  e4:SetCountLimit(1)
 	c:RegisterEffect(e4)
 
 end
