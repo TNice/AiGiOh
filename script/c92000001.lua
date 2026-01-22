@@ -43,9 +43,11 @@ function s.initial_effect(c)
   -- IMPORTANT: CONTINUOUS (NOT TRIGGER) to avoid End Phase loop/prompt spam.
   ------------------------------------------------------------
   local e3=Effect.CreateEffect(c)
-  e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+  e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
   e3:SetRange(LOCATION_FZONE)
   e3:SetCode(EVENT_PHASE+PHASE_END)
+  e3:SetCountLimit(1, id+920)     -- unique per card script; prevents multiple fires in the same End Phase
+  e3:SetCondition(s.endphase_con) -- do not trigger unless needed
   e3:SetOperation(s.endphase_op)
   c:RegisterEffect(e3)
 
@@ -118,6 +120,17 @@ function s.on_chain_failed(e,tp,eg,ep,ev,re,r,rp)
 end
 
 ----------------------------------------------------------------
+-- End Phase condition
+----------------------------------------------------------------
+
+function s.endphase_con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c or not c:IsFaceup() then return false end
+	-- Only trigger if an Amendment was active for the controller this turn
+	return Codex.WasAmendmentActiveThisTurn(c:GetControler())
+end
+
+----------------------------------------------------------------
 -- (2) End Phase counter gain
 ----------------------------------------------------------------
 function s.endphase_op(e,tp,eg,ep,ev,re,r,rp)
@@ -125,9 +138,7 @@ function s.endphase_op(e,tp,eg,ep,ev,re,r,rp)
 	if not c or not c:IsFaceup() then return end
 
 	local p=c:GetControler()
-	if Codex.WasAmendmentActiveThisTurn(p) then
-		c:AddCounter(Codex.COUNTER_PRECEDENT,1)
-	end
+	c:AddCounter(Codex.COUNTER_PRECEDENT,1)
 
 	-- Keep Amendment slots consistent with Tribunal presence (clears slot B if Tribunal is gone)
 	Codex.ClearSlotBIfNoTribunal(p)
