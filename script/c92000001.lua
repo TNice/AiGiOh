@@ -102,6 +102,8 @@ end
 function s.activate_op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c or not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
+  
+  c:AddCounter(Codex.COUNTER_PRECEDENT,1)
 
 	local new_id=s.announce_amendment_id(tp)
 	if not new_id or new_id<=0 then return end
