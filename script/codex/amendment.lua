@@ -342,3 +342,24 @@ function Codex.GetAmendmentId(fs, slot)
 	slot = _clamp_slot(slot)
 	return Codex.GetAmendSlot(fs, slot)
 end
+
+function Codex.UpdateFrameworkHint(tp)
+	local fs=Codex.RequireFramework(tp)
+	if not fs then return end
+
+	local a=Codex.GetAmendSlot(fs,1)
+	local b=Codex.GetAmendSlot(fs,2)
+	local maxs=Codex.GetMaxAmendSlots(tp)
+
+	-- Persistent numeric indicator on the card
+	if maxs>=2 then
+		fs:SetHint(CHINT_NUMBER, (a or 0)*100 + (b or 0))
+	else
+		fs:SetHint(CHINT_NUMBER, a or 0)
+	end
+
+	-- Transient clarity message (only when 2 Amendments exist)
+	if maxs>=2 and a~=0 and b~=0 then
+		Duel.Hint(HINT_MESSAGE, tp, "Active Amendments: "..a..","..b)
+	end
+end
